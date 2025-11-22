@@ -2,7 +2,7 @@
   <div class="page page-task-detail">
     <h1>タスク詳細（ID: {{ taskId }}）</h1>
 
-    <section>
+    <section v-if="task">
       <h2>情報</h2>
       <p>タイトル: {{ task.title }}</p>
       <p>説明: {{ task.description }}</p>
@@ -10,6 +10,9 @@
       <p>担当者: {{ task.assignee }}</p>
       <p>期限: {{ task.dueDate }}</p>
     </section>
+    <div v-else>
+      <p>読み込み中...</p>
+    </div>
 
     <section>
       <h2>コメント</h2>
@@ -36,10 +39,10 @@
 
 <script setup lang="ts">
 const route = useRoute()
-
-const taskId = computed(() => route.params.taskId)
+const taskId = computed(() => Number(route.params.taskId))
 
 type TaskDetail = {
+  id: number
   title: string
   description: string
   status: string
@@ -53,14 +56,36 @@ type Comment = {
   body: string
 }
 
-const task = ref<TaskDetail>({
-  // TODO: API から取得
-  title: 'サンプルタスク',
-  description: 'ここにタスクの詳細説明が入ります。',
-  status: 'ToDo',
-  assignee: '山田 太郎',
-  dueDate: '2025-11-30'
-})
+const allTaskDetails = ref<TaskDetail[]>([
+  {
+    id: 1,
+    title: '仕様書を書く',
+    description: 'プロジェクトAの仕様書を作成する',
+    status: 'ToDo',
+    assignee: '山田 太郎',
+    dueDate: '2025-11-30'
+  },
+  {
+    id: 2,
+    title: 'API設計をする',
+    description: '認証とタスク管理用APIを設計する',
+    status: 'Doing',
+    assignee: '佐藤 花子',
+    dueDate: '2025-12-05'
+  },
+  {
+    id: 3,
+    title: 'デプロイ設定',
+    description: '本番環境へのデプロイフローを整える',
+    status: 'Done',
+    assignee: '鈴木 次郎',
+    dueDate: '2025-12-10'
+  }
+])
+
+const task = computed(() =>
+  allTaskDetails.value.find(t => t.id === taskId.value) ?? allTaskDetails.value[0]
+)
 
 const comments = ref<Comment[]>([
   // TODO: API から取得

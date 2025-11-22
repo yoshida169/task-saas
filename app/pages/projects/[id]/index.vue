@@ -47,22 +47,28 @@
 const route = useRoute()
 const router = useRouter()
 
-const projectId = computed(() => route.params.id)
+const projectId = computed(() => Number(route.params.id))
 
 type Status = 'todo' | 'doing' | 'done'
 
 type Task = {
   id: number
+  projectId: number
   title: string
   status: Status
 }
 
-const tasks = ref<Task[]>([
+const allTasks = ref<Task[]>([
   // TODO: API から取得
-  { id: 1, title: '仕様書を書く', status: 'todo' },
-  { id: 2, title: 'API設計', status: 'doing' },
-  { id: 3, title: 'デプロイ設定', status: 'done' }
+  { id: 1, projectId: 1, title: '仕様書を書く', status: 'todo' },
+  { id: 2, projectId: 1, title: 'API設計をする', status: 'doing' },
+  { id: 3, projectId: 2, title: 'デプロイ設定', status: 'done' },
 ])
+
+// このプロジェクトに属するタスクだけフィルタ
+const tasks = computed(() =>
+  allTasks.value.filter(task => task.projectId === projectId.value)
+)
 
 const todoTasks = computed(() => tasks.value.filter(t => t.status === 'todo'))
 const doingTasks = computed(() => tasks.value.filter(t => t.status === 'doing'))
