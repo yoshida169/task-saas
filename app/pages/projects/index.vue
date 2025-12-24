@@ -44,7 +44,11 @@ type Project = {
 const projects = ref<Project[]>([])
 
 onMounted(async () => {
-  projects.value = await apiFetch<Project[]>('/projects')
+  try {
+    projects.value = await apiFetch<Project[]>('/projects')
+  } catch (e) {
+    console.error('projects fetch failed:', e)
+  }
 })
 
 const goProject = (id: number) => {
