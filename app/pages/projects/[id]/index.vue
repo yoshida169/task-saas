@@ -44,6 +44,7 @@
 </template>
 
 <script setup lang="ts">
+const { apiFetch } = useApi()
 const route = useRoute()
 const router = useRouter()
 
@@ -58,28 +59,17 @@ type Task = {
   status: Status
 }
 
-const allTasks = ref<Task[]>([
-  // TODO: API から取得
-  { id: 1, projectId: 1, title: '仕様書を書く', status: 'todo' },
-  { id: 2, projectId: 1, title: 'API設計をする', status: 'doing' },
-  { id: 3, projectId: 2, title: 'デプロイ設定', status: 'done' },
-])
+const tasks = ref<Task[]>([])
 
-// このプロジェクトに属するタスクだけフィルタ
-const tasks = computed(() =>
-  allTasks.value.filter(task => task.projectId === projectId.value)
-)
+
+onMounted(async () => {
+  tasks.value = await apiFetch<Task[]>(`/projects/${projectId.value}/tasks`)
+})
 
 const todoTasks = computed(() => tasks.value.filter(t => t.status === 'todo'))
 const doingTasks = computed(() => tasks.value.filter(t => t.status === 'doing'))
 const doneTasks = computed(() => tasks.value.filter(t => t.status === 'done'))
 
-const goTask = (id: number) => {
-  router.push(`/tasks/${id}`)
-}
+const goTask = (id: number) => router.push(`/tasks/${id}`)
 
-const createTask = () => {
-  // TODO: モーダルなどでタスク作成
-  console.log('create task')
-}
 </script>
