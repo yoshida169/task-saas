@@ -19,7 +19,6 @@ export const useAuthStore = defineStore('auth', {
     },
 
     hydrateFromCookie() {
-      if (!import.meta.client) return
       const user = useCookie<User | null>('user')
       this.user = user.value ?? null
     },
