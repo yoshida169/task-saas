@@ -59,16 +59,15 @@ type Task = {
   status: Status
 }
 
-const tasks = ref<Task[]>([])
+const { data: tasks } = await useAsyncData<Task[]>(
+  `project-${projectId.value}-tasks`,
+  () => apiFetch<Task[]>(`/projects/${projectId.value}/tasks`),
+  { default: () => [] }
+)
 
-
-onMounted(async () => {
-  tasks.value = await apiFetch<Task[]>(`/projects/${projectId.value}/tasks`)
-})
-
-const todoTasks = computed(() => tasks.value.filter(t => t.status === 'todo'))
-const doingTasks = computed(() => tasks.value.filter(t => t.status === 'doing'))
-const doneTasks = computed(() => tasks.value.filter(t => t.status === 'done'))
+const todoTasks = computed(() => (tasks.value || []).filter(t => t.status === 'todo'))
+const doingTasks = computed(() => (tasks.value || []).filter(t => t.status === 'doing'))
+const doneTasks = computed(() => (tasks.value || []).filter(t => t.status === 'done'))
 
 const goTask = (id: number) => router.push(`/tasks/${id}`)
 
