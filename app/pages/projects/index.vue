@@ -18,8 +18,16 @@
 
     <section>
       <h2>自分の担当タスク（サマリ）</h2>
-      <!-- TODO: 担当タスクのサマリ表示 -->
-      <p>ここに担当タスク一覧を表示します（TODO）。</p>
+      <ul v-if="tasks && tasks.length">
+        <li v-for="task in tasks" :key="task.id">
+          <span>{{ task.title }} ({{ task.status }})</span>
+          
+          <button @click="updateStatus(task.id, 'doing')">→ Doing</button>
+          <button @click="updateStatus(task.id, 'done')">→ Done</button>
+          <button @click="updateStatus(task.id, 'todo')">→ ToDo</button>
+        </li>
+      </ul>
+      <p v-else>担当タスクはありません。</p>
     </section>
 
     <button @click="createProject">
@@ -31,6 +39,7 @@
 <script setup lang="ts">
 import { useAuthStore } from '~/stores/auth'
 import { useApi } from '~/composables/useApi'
+import type { Task } from '~~/server/utils/taskStore'
 
 const auth = useAuthStore()
 const router = useRouter()
@@ -42,17 +51,28 @@ type Project = {
 }
 
 const projects = ref<Project[]>([])
+const tasks = ref<Task[]>([])
 
 onMounted(async () => {
   try {
     projects.value = await apiFetch<Project[]>('/projects')
+    tasks.value = await apiFetch<Task[]>('/tasks')
   } catch (e) {
-    console.error('projects fetch failed:', e)
+    console.error('projects/tasks fetch failed:', e)
   }
 })
 
 const goProject = (id: number) => {
   router.push(`/projects/${id}`)
+}
+
+const updateStatus = async (taskId: number, status: 'todo' | 'doing' | 'done') => {
+  const updated = await apiFetch<Task>(`/tasks/${taskId}`, {
+    method: 'PATCH',
+    body: { status },
+  })
+
+  tasks.value = tasks.value.map(t => (t.id === updated.id ? updated : t))
 }
 
 const createProject = () => {
