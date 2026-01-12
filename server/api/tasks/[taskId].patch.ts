@@ -5,8 +5,8 @@ export default defineEventHandler(async (event) => {
   if (!auth || !auth.startsWith('Bearer ')) {
     throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
   }
-
-  const taskId = Number(getRouterParam(event, 'id'))
+  
+  const taskId = Number(getRouterParam(event, 'taskId'))
   if (!Number.isFinite(taskId)) {
     throw createError({ statusCode: 400, statusMessage: 'Invalid task id' })
   }
