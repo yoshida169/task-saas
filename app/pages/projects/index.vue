@@ -31,7 +31,7 @@
     </section>
 
     <button @click="createProject">
-      新規プロジェクト作成（TODO）
+      新規プロジェクト作成
     </button>
   </div>
 </template>
