@@ -53,3 +53,10 @@ export const updateTaskStatus = (taskId: number, status: Status) => {
   tasks[idx] = { ...tasks[idx], status }
   return tasks[idx]
 }
+
+export const createTask = (input: Omit<Task, 'id'>): Task => {
+  const maxId = tasks.reduce((max, t) => Math.max(max, t.id), 0)
+  const newTask: Task = { id: maxId + 1, ...input }
+  tasks.push(newTask)
+  return newTask
+}
