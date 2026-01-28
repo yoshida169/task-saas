@@ -16,7 +16,7 @@
         </button>
 
         <NuxtLink
-          v-else
+          v-if="!auth.user && route.path !== '/login'"
           to="/login"
           style="text-decoration: underline;"
         >
@@ -36,6 +36,7 @@ import { useAuthStore } from '~/stores/auth'
 
 const auth = useAuthStore()
 const router = useRouter()
+const route = useRoute()
 
 const onLogout = () => {
   auth.logout()
