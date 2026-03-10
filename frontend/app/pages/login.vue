@@ -2,6 +2,7 @@
   <div class="min-h-screen flex items-center justify-center bg-gray-100">
     <div class="w-full max-w-md bg-white rounded-lg shadow-md p-8">
       <h1 class="text-2xl font-bold text-center text-gray-800 mb-8">ログイン</h1>
+      <p v-if="errorMsg" class="text-red-600 text-sm text-center bg-red-50 p-3 rounded-md">{{ errorMsg }}</p>
       <form @submit.prevent="onSubmit" class="space-y-6">
         <div>
           <label for="email" class="block text-sm font-medium text-gray-700 mb-1">
@@ -53,8 +54,15 @@ const auth = useAuthStore()
 const email = ref('')
 const password = ref('')
 
-const onSubmit = () => {
-  auth.login(email.value, password.value)
-  router.push('/projects')
+const errorMsg = ref('')
+
+const onSubmit = async () => {
+  errorMsg.value = ''
+  try {
+    await auth.login(email.value, password.value)
+    router.push('/projects')
+  } catch {
+    errorMsg.value = 'ログインに失敗しました。もう一度お試しください。'
+  }
 }
 </script>

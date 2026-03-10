@@ -8,14 +8,16 @@ export const useAuthStore = defineStore('auth', {
   }),
 
   actions: {
-    login(email: string, _password: string) {
-      const token = useCookie<string | null>('token')
-      token.value = 'dummy-token'
+    async login(email: string, password: string) {
+      const config = useRuntimeConfig()
+      const data = await $fetch<{ token: string; user: User }>(`${config.public.apiBase}/login`, {
+        method: 'POST',
+        body: { email, password },
+      })
 
-      const nextUser: User = { id: 1, name: 'デモユーザー', email }
-
-      useCookie<User | null>('user').value = nextUser
-      this.user = nextUser
+      useCookie<string | null>('token').value = data.token
+      useCookie<User | null>('user').value = data.user
+      this.user = data.user
     },
 
     hydrateFromCookie() {

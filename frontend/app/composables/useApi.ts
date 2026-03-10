@@ -4,7 +4,7 @@ export const useApi = () => {
   const token = useCookie<string | null>('token')
 
   const apiFetch = $fetch.create({
-    baseURL: '/api',
+    baseURL: useRuntimeConfig().public.apiBase as string,
     onRequest({ options }) {
       if (token.value) {
         const headers = new Headers(options.headers)
